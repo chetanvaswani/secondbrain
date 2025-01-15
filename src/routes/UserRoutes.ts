@@ -9,8 +9,9 @@ dotenv.config();
 export const UserRouter = express.Router()
 const prisma = new PrismaClient();
 const secret: string = process.env.SECRET!;
+const saltrounds = 3;
 
-UserRouter.post('/signup', async (req, res) => {
+UserRouter.post('/signup', async (req, res, next) => {
     const response = userSchema.safeParse(req.body)
     if (!response.success){
         res.send(response)
@@ -28,7 +29,7 @@ UserRouter.post('/signup', async (req, res) => {
         return
     }
 
-    const hash = await bcrypt.hash(user.password, 1);
+    const hash = await bcrypt.hash(user.password, saltrounds);
     console.log(hash)
 
     await prisma.users.create({ data: {
@@ -42,7 +43,8 @@ UserRouter.post('/signup', async (req, res) => {
     })
 })
 
-UserRouter.post('/signin', async (req, res) => {
+
+UserRouter.post('/signin', async (req, res, next) => {
     const response = userSchema.safeParse(req.body)
     if (!response.success){
         res.send(response)
