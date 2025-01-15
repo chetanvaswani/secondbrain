@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { userSchema, userInterface } from "../types/schema";
 import * as dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'
 dotenv.config();
 
 export const UserRouter = express.Router()
@@ -15,7 +16,7 @@ UserRouter.post('/signup', async (req, res) => {
         res.send(response)
         return
     }
-    const user : userInterface = req.body
+    const user : userInterface = req.body;
 
     const userExist =  await prisma.users.findFirst({
         where: {
@@ -27,21 +28,51 @@ UserRouter.post('/signup', async (req, res) => {
         return
     }
 
-    const hash = await bcrypt.hash(user.password, 1)
+    const hash = await bcrypt.hash(user.password, 1);
+    console.log(hash)
 
-    const createUser = await prisma.users.create({ data: {
+    await prisma.users.create({ data: {
         username: user.username,
         password: hash
     } })
-    // const token = jwt.sign({
-    //     id: createUser.id,
-    //     username: createUser.username,
-    //     createdAT: Date.now()
-    // }, secret)
-    // console.log(token)
-    // console.log(jwt.decode(token))
+
     res.status(200).json({
         success: true,
         msg: "user created successfully!"
+    })
+})
+
+UserRouter.post('/signin', async (req, res) => {
+    const response = userSchema.safeParse(req.body)
+    if (!response.success){
+        res.send(response)
+        return
+    }
+    const user : userInterface = req.body;
+    // finding user with the same email
+    const userFound =  await prisma.users.findFirst({
+        where: {
+            username: user.username,
+        }
+    })
+    if(!userFound){
+        res.status(403).json({success: false, data: "invalid credentials"})
+        return
+    }
+    // comparing passwords
+    const result = await bcrypt.compare( user.password, userFound.password)
+    if(!result){
+        res.status(403).json({success: false, data: "invalid credentials"})
+        return
+    }
+
+    // generating jwt
+    const token = jwt.sign({
+        id: userFound.id,
+        username: userFound.username,
+        createdAT: Date.now()
+    }, secret)
+    res.status(200).json({
+        token: token
     })
 })
