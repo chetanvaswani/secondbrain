@@ -3,7 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { userSchema, userInterface } from "../types/schema";
 import * as dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
+import "express-async-errors";
 dotenv.config();
 
 export const UserRouter = express.Router()
@@ -67,13 +68,13 @@ UserRouter.post('/signin', async (req, res, next) => {
         res.status(403).json({success: false, data: "invalid credentials"})
         return
     }
-
     // generating jwt
     const token = jwt.sign({
         id: userFound.id,
         username: userFound.username,
         createdAT: Date.now()
     }, secret)
+    throw new Error('Whoops!')
     res.status(200).json({
         token: token
     })
