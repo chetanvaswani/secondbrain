@@ -74,7 +74,6 @@ UserRouter.post('/signin', async (req, res, next) => {
         username: userFound.username,
         createdAT: Date.now()
     }, secret)
-    throw new Error('Whoops!')
     res.status(200).json({
         token: token
     })
