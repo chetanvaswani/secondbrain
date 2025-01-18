@@ -9,4 +9,12 @@ export const userSchema = z.object({
         {message: 'Password must have one uppercae, one lowercase and one special character'})
 });
 
+export const contentSchema =  z.object({
+    type: z.enum(['document', 'tweet', 'youtube', "link"], { message: "Invalid Type"}),
+    link: z.string().url({message: "not a valid link"}),
+    title: z.string({message: "invalid title"}),
+    tags: z.string().array(),
+})
+
 export type userInterface = z.infer<typeof userSchema>
+export type contentInterface = z.infer<typeof contentSchema>

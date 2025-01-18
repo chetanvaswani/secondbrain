@@ -40,7 +40,7 @@ UserRouter.post('/signup', async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        msg: "user created successfully!"
+        data: "user created successfully!"
     })
 })
 
@@ -75,6 +75,9 @@ UserRouter.post('/signin', async (req, res, next) => {
         createdAT: Date.now()
     }, secret)
     res.status(200).json({
-        token: token
+        success: true, 
+        data: {
+            token: token
+        }
     })
 })
