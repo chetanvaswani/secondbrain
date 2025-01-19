@@ -5,8 +5,26 @@ import { PrismaClient } from "@prisma/client";
 const ContentRouter = Router();
 const client = new PrismaClient();
 
-ContentRouter.get("/", (req, res, next) => {
-    res.send("hello world")
+ContentRouter.get("/", async (req, res, next) => {
+    const userId = req.userId;
+
+    const contents = await client.content.findMany({
+        where:{
+            userId: userId
+        }
+    })
+
+    if(!contents){
+        res.status(411).json({
+            success: false,
+            data: "No items to show"
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        data: contents
+    })
 })
 
 ContentRouter.post("/", async (req, res, next) => {

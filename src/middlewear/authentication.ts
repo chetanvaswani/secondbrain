@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from 'jsonwebtoken';
-import { string } from "zod";
+import { PrismaClient } from "@prisma/client";
+
+const client = new PrismaClient();
 
 const secret = process.env.SECRET!;
 
-const auth = (
+const auth = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -18,7 +20,7 @@ const auth = (
     const token: string = authHeader?.split(' ')[1]!;
 
     const decoded =  jwt.verify(token, secret)
-    if (!decoded){
+    if (!decoded ){
         res.status(403).json({ msg : "Can not verify user. Token rejected." })
     }
     
