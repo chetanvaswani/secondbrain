@@ -12,9 +12,12 @@ ContentRouter.get("/", (req, res, next) => {
 ContentRouter.post("/", async (req, res, next) => {
     const userId = req.userId;
 
-    const response = contentSchema.safeParse(req.body);
-    if (!response.success){
-        res.send(response)
+    const {success, data, error} = contentSchema.safeParse(req.body);
+    if (!success){
+        res.status(411).json({
+            success: false,
+            data: error
+        })
         return
     }
 
@@ -40,6 +43,10 @@ ContentRouter.post("/", async (req, res, next) => {
         success: true,
         data: "content added successfully."
     })
+})
+
+ContentRouter.put("/", (req, res, next) => {
+
 })
 
 ContentRouter.delete("/", (req, res, next) => {
