@@ -10,6 +10,7 @@ export const userSchema = z.object({
 });
 
 export const contentSchema =  z.object({
+    // id: z.number().or(z.null()),
     type: z.enum(['document', 'tweet', 'youtube', "link"], { message: "Invalid Type"}),
     link: z.string().url({message: "not a valid link"}),
     title: z.string({message: "invalid title"}),
