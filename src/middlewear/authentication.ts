@@ -26,7 +26,6 @@ const auth = async (
     
     // @ts-ignore
     req.userId = decoded.id;
-    console.log(req.userId)
     next();
 }
 

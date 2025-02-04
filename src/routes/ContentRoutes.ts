@@ -99,6 +99,20 @@ ContentRouter.put("/", async (req, res, next) => {
             type: content.type,
             userId: userId,
             link: content.link,
+            tags: {
+                deleteMany: {
+                    contentId: contentId
+                },
+                createMany: {
+                    data: [
+                        ...content.tags.map((title) => {
+                            return {
+                                title: title
+                            }
+                        })
+                    ]
+                }
+            }
         },
         include:{
             tags: true
@@ -112,48 +126,14 @@ ContentRouter.put("/", async (req, res, next) => {
         return;
     }
 
-    const existingTagTitles = updatedContent.tags.map(tag => tag.title);
-    const newTagTitles = content.tags;
-
-    const tagsToAdd = newTagTitles.filter(title => !existingTagTitles.includes(title))
-    const tagsToRemove = existingTagTitles.filter(title => !newTagTitles.includes(title))
-
-    const updatedContentWithTags = await client.content.update({
-        where: {
-            id: contentId,
-            userId: userId
-        }, 
-        data: {
-            tags: {
-                createMany: {
-                    data: [ ...tagsToAdd.map(title => {
-                        return {
-                            title: title
-                        }
-                    }) ]
-                },
-                deleteMany: [
-                    ...tagsToRemove.map(title => {
-                        return {
-                            title: title
-                        }
-                    })
-                ]
-            }
-        },
-        include: {
-            tags: true
-        }
-    })
-
     res.status(200).json({
         success: true,
-        data: updatedContentWithTags
+        data: updatedContent
     })
 })
 
 ContentRouter.delete("/", async (req, res, next) => {
-    
+
 })
 
 export default ContentRouter
