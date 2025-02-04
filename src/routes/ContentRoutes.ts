@@ -22,6 +22,7 @@ ContentRouter.get("/", async (req, res, next) => {
             success: false,
             data: "No items to show"
         })
+        return
     }
 
     res.status(200).json({

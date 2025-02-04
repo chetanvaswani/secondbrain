@@ -4,10 +4,9 @@ import { userSchema, userInterface } from "../types/schema";
 import * as dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import "express-async-errors";
 dotenv.config();
 
-export const UserRouter = express.Router()
+const UserRouter = express.Router()
 const prisma = new PrismaClient();
 const secret: string = process.env.SECRET!;
 const saltrounds = 3;
@@ -81,3 +80,5 @@ UserRouter.post('/signin', async (req, res, next) => {
         }
     })
 })
+
+export default UserRouter;
