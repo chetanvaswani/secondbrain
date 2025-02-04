@@ -133,7 +133,42 @@ ContentRouter.put("/", async (req, res, next) => {
 })
 
 ContentRouter.delete("/", async (req, res, next) => {
+    const userId = req.userId;
+    const contentId = req.body.contentId;
 
+    if (!contentId) {
+        res.status(400).json({
+            message: "Content ID is required for updates",
+        });
+        return;
+    }
+
+    const deleteTags = client.tag.deleteMany({
+        where:{
+            contentId: contentId,
+        }
+    })
+    
+    const deleteContent = client.content.delete({
+        where: {
+            id: contentId,
+            userId: userId,
+        },
+    })
+
+    const transaction = await client.$transaction([deleteTags, deleteContent])
+
+    if (!transaction) {
+        res.status(404).json({
+            message: "Content not found or you're not authorized to delete it",
+        });
+        return;
+    }
+
+    res.status(200).json({
+        success: true,
+        data: transaction
+    })
 })
 
 export default ContentRouter
