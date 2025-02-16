@@ -33,10 +33,11 @@ ContentRouter.get("/", async (req, res, next) => {
 
 ContentRouter.post("/", async (req, res, next) => {
     const userId = req.userId;
-
+    console.log(req.body)
     const {success, data, error} = contentSchema.safeParse(req.body);
+    // console.log(success, data, error)
     if (!success){
-        res.status(411).json({
+        res.status(400).json({
             success: false,
             data: error
         })
@@ -76,14 +77,15 @@ ContentRouter.put("/", async (req, res, next) => {
 
     if (!contentId) {
         res.status(400).json({
-            message: "Content ID is required for updates",
+            success: false,
+            data: "Content ID is required for updates",
         });
         return;
     }
 
     const {success, data, error} = contentSchema.safeParse(req.body);
     if (!success){
-        res.status(411).json({
+        res.status(400).json({
             success: false,
             data: error
         })
@@ -122,7 +124,8 @@ ContentRouter.put("/", async (req, res, next) => {
 
     if (!updatedContent) {
         res.status(404).json({
-            message: "Content not found or you're not authorized to update it",
+            success: false,
+            data: "Content not found or you're not authorized to update it",
         });
         return;
     }
@@ -133,13 +136,14 @@ ContentRouter.put("/", async (req, res, next) => {
     })
 })
 
-ContentRouter.delete("/", async (req, res, next) => {
+ContentRouter.delete("/:contentId", async (req, res, next) => {
     const userId = req.userId;
-    const contentId = req.body.contentId;
+    const contentId = parseInt(req.params.contentId);
 
     if (!contentId) {
         res.status(400).json({
-            message: "Content ID is required for updates",
+            success: false,
+            data: "Content ID is required for updates",
         });
         return;
     }
@@ -161,6 +165,7 @@ ContentRouter.delete("/", async (req, res, next) => {
 
     if (!transaction) {
         res.status(404).json({
+            success: false,
             message: "Content not found or you're not authorized to delete it",
         });
         return;

@@ -8,12 +8,18 @@ import auth from "./middlewear/authentication";
 import ContentRouter from "./routes/ContentRoutes";
 import LinkRouter from "./routes/LinkRoutes";
 import "express-async-errors";
+import cors from "cors";
+
 dotenv.config();
 
 const PORT = process.env.PORT || 6001
+const corsOption = {
+    origin: ['http://localhost:5173'],
+};
 
 const app = express();
 app.use(express.json())
+app.use(cors(corsOption));
 
 const prisma = new PrismaClient();
 
