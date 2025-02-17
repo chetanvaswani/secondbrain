@@ -81,7 +81,9 @@ LinkRouter.post('/share', auth, async (req, res, next) => {
     if (linkCreated){
         res.status(200).json({
             success: true,
-            data: linkCreated.hash
+            data: {
+                link: linkCreated.hash
+            }
         })
         return
     }
@@ -107,8 +109,8 @@ LinkRouter.post('/share', auth, async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        data: {
-            link: newLink
+        data:{
+            link: newLink.hash
         }
     })
 })
